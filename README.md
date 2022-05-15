@@ -10,3 +10,9 @@ Node ideas
 - portrait background replacement
 - human face transformation
 - real fisheye
+
+Crazy node ideas
+- recognize text then generate images on it
+
+Other notes
+- all photos must be resized to square with fields then back
