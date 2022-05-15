@@ -1,6 +1,7 @@
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
+# https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/fp16/prediction/1
 predict_model_path = 'models/arbitary_image_stylization/magenta_arbitrary-image-stylization-v1-256_fp16_prediction_1.tflite'
 transfer_model_path = 'models/arbitary_image_stylization/magenta_arbitrary-image-stylization-v1-256_fp16_transfer_1.tflite'
 
