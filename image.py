@@ -1,25 +1,26 @@
-import numpy as np
 import tensorflow as tf
+import numpy as np
+import cv2
 
-# Load TFLite model and allocate tensors.
-interpreter = tf.lite.Interpreter(model_path="lite-model_cartoongan_dr_1.tflite")
-interpreter.allocate_tensors()
 
-# Get input and output tensors.
-input_details = interpreter.get_input_details()
-output_details = interpreter.get_output_details()
+def load_img(path_to_img):
+    img = cv2.imread(path_to_img)
+    img = img.astype(np.float32) / 127.5 - 1
+    img = np.expand_dims(img, 0)
+    img = tf.convert_to_tensor(img)
+    return img
 
-print('input_details', input_details)
-print('output_details', output_details)
 
-# Test model on random input data.
-input_shape = input_details[0]['shape']
-input_data = np.array(np.random.random_sample(input_shape), dtype=np.float32)
-interpreter.set_tensor(input_details[0]['index'], input_data)
+# Function to pre-process by resizing an central cropping it.
+def preprocess_image(image, target_dim=512):
+    # Resize the image so that the shorter dimension becomes the target dim.
+    shape = tf.cast(tf.shape(image)[1:-1], tf.float32)
+    short_dim = min(shape)
+    scale = target_dim / short_dim
+    new_shape = tf.cast(shape * scale, tf.int32)
+    image = tf.image.resize(image, new_shape)
 
-interpreter.invoke()
+    # Central crop the image.
+    image = tf.image.resize_with_crop_or_pad(image, target_dim, target_dim)
 
-# The function `get_tensor()` returns a copy of the tensor data.
-# Use `tensor()` in order to get a pointer to the tensor.
-output_data = interpreter.get_tensor(output_details[0]['index'])
-print(output_data)
+    return image
