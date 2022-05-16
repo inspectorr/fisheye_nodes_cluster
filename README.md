@@ -3,6 +3,8 @@ TODO
 - test_runner_x to MLBackend class
 - build lib for flask service deployment
 - time measurement
+- all photos must be resized to square with fields then back
+- we need stepping system in MLBackend class for runners like 3
 
 Workflow ideas
 - providing second image in request (for bg or styling)
@@ -19,8 +21,6 @@ Crazy node ideas
 - recognize text then generate images on it
 
 Other notes
-- all photos must be resized to square with fields then back
-- we need stepping system in MLBackend class for runners like 3
 
 Runners current state notes
 - 1 - cartoonizer. slow, ok
