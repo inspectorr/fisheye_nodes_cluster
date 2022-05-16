@@ -25,13 +25,12 @@ interpreter.set_tensor(input_details[0]['index'], preprocessed_image)
 interpreter.invoke()
 
 output_data = interpreter.get_tensor(output_details[0]['index'])
-masked_data = interpreter.get_tensor(output_details[1]['index'])
 
-# output = (np.squeeze(output_data)+1.0)*127.5
-# output = np.clip(output, 0, 255).astype(np.uint8)
-# output = cv2.cvtColor(output, cv2.COLOR_BGR2RGB)
+output = (np.squeeze(output_data)+1.0)*127.5
+output = np.clip(output, 0, 255).astype(np.uint8)
+output = cv2.cvtColor(output, cv2.COLOR_BGR2RGB)
 
-output_image = np.squeeze(output_data)
+output_image = np.squeeze(output)
 
 plt.subplot(1, 2, 1)
 plt.imshow(plt.imread(image_path))
