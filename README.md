@@ -41,3 +41,4 @@ Other notes
 - the first priority now is handle the existing models right and create api for them
 - all of what is already done is image-to-image backends - this is the only abstract strategy for now
 - background can be removed with segmentation model (example: https://pytorch.org/hub/pytorch_vision_deeplabv3_resnet101/)
+- do we really need microservices for this?...
