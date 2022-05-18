@@ -1,12 +1,14 @@
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
+from backend import ImageToImageMLBackend
+
 # https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/fp16/prediction/1
 predict_model_path = 'models/arbitary_image_stylization/magenta_arbitrary-image-stylization-v1-256_fp16_prediction_1.tflite'
 transfer_model_path = 'models/arbitary_image_stylization/magenta_arbitrary-image-stylization-v1-256_fp16_transfer_1.tflite'
 
-content_image_path = 'test_images/cat.jpeg'
-style_image_path = 'test_images/flower_field.jpeg'
+content_image_path = 'test_images/hermitage.jpg'
+style_image_path = 'test_images/drawn_city.jpg'
 
 
 # Function to load an image from a file, and add a batch dimension.
@@ -96,4 +98,12 @@ print('Style Bottleneck Shape:', style_bottleneck.shape)
 # Stylize the content image using the style bottleneck.
 stylized_image = run_style_transform(style_bottleneck, preprocessed_content_image)
 
-imshow(stylized_image, 'Stylized Image')
+
+def postprocess_image(image):
+    if len(image.shape) > 3:
+        return tf.squeeze(image, axis=0)
+
+
+ImageToImageMLBackend.visualize_for_test(
+    [('Stylized Image', postprocess_image(stylized_image))]
+)

@@ -1,55 +1,61 @@
-from abc import ABC, abstractmethod
+from abc import ABC
+import tensorflow as tf
+import matplotlib.pyplot as plt
 
-from PIL import Image
+
+def preprocess_image_default(source_image):
+    ...
 
 
-class MLBackend(ABC):
-    @property
-    @abstractmethod
-    def model_path(self) -> str:
-        """
-        Path to .tflite model
-        """
+def postprocess_image_default(output_image_data):
+    ...
 
-    @property
-    @abstractmethod
-    def model_original_readme_url(self) -> str:
-        """
-        Readme URL for model where it's downloadable
-        """
 
-    # @property
-    # @abstractmethod
-    # def url_name(self) -> str:
-    #     """
-    #     Name be used for api access ?
-    #     """
+class ImageToImageMLBackend(ABC):
+    def __init__(
+            self,
+            model_path,
+            readme_url,
+            preprocess_image,
+            postprocess_image,
+    ):
+        self.model_path = model_path
+        self.readme_url = readme_url
+        self.preprocess_image = preprocess_image
+        self.postprocess_image = postprocess_image
 
-    def preprocess_image(self, source_image):
-        """
-        Converts an image to input data for tf model
-        """
-
-    def set_params_to_tensor(self, params_dict):
-        ...
-
-    @abstractmethod
-    def visualize_for_test(self, source_image, output_image):
+    @staticmethod
+    def visualize_for_test(images):
         """
         Visualize source and output image using matplotlib
-        todo default ?
         """
+        for i, (title, image) in enumerate(images):
+            plt.subplot(1, len(images), i + 1)
+            plt.imshow(image)
+            plt.title(title)
+        plt.show()
 
-    def predict(self, source_image) -> Image:
+    def predict(self, image_path, *args):
+        preprocessed_image = self.preprocess_image(image_path)
+        output_data = self.invoke_interpreter(preprocessed_image, *args)
+        return self.postprocess_image(output_data)
+
+    def invoke_interpreter(self, *tensors):
         """
         Do the main work with TensorFlow
-        :param source_image:
+        :param tensors:
         :return:
         """
-        ...
+        interpreter = tf.lite.Interpreter(model_path=self.model_path)
+        interpreter.allocate_tensors()
 
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
 
-# class TestBackend(MLBackend):
-#     @property
-#     def model_path(self) -> str:
-#         return 'models/...'
+        for i, tensor in enumerate(tensors):
+            interpreter.set_tensor(input_details[i]['index'], tensor)
+
+        # todo time measurement
+        interpreter.invoke()
+
+        return interpreter.get_tensor(output_details[0]['index'])
