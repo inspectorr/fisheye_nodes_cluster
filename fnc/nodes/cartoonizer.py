@@ -3,10 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
-from backend import ImageToImageMLBackend
-from image_utils import resize_and_central_crop
-
-test_image_path = 'test_images/roman.jpg'
+from fnc.common.backend import ImageToImageMLBackend
+from fnc.common.image_utils import resize_and_central_crop
 
 
 def preprocess_image(source_image_path):
@@ -31,9 +29,13 @@ backend = ImageToImageMLBackend(
     postprocess_image=postprocess_image,
 )
 
-output_image = backend.predict(test_image_path)
 
-ImageToImageMLBackend.visualize_for_test((
-    ('Source image', plt.imread(test_image_path)),
-    ('Cartoonized image', output_image)
-))
+if __name__ == '__main__':
+    test_image_path = 'test_images/roman.jpg'
+
+    output_image = backend.predict(test_image_path)
+
+    ImageToImageMLBackend.visualize_for_test((
+        ('Source image', plt.imread(test_image_path)),
+        ('Cartoonized image', output_image)
+    ))

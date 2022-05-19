@@ -1,7 +1,7 @@
 import tensorflow as tf
 
-from backend import ImageToImageMLBackend
-from image_utils import resize_and_central_crop
+from fnc.common.backend import ImageToImageMLBackend
+from fnc.common.image_utils import resize_and_central_crop
 
 # https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/fp16/prediction/1
 predict_model_path = 'models/arbitary_image_stylization/magenta_arbitrary-image-stylization-v1-256_fp16_prediction_1.tflite'
