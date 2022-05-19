@@ -4,24 +4,17 @@ import numpy as np
 import tensorflow as tf
 
 from backend import ImageToImageMLBackend
+from image_utils import resize_and_central_crop
 
 test_image_path = 'test_images/roman.jpg'
 
 
-def preprocess_image(source_image_path, target_dim=512):
+def preprocess_image(source_image_path):
     source_image = cv2.imread(source_image_path)
     img = source_image.astype(np.float32) / 127.5 - 1
     img = np.expand_dims(img, 0)
     img = tf.convert_to_tensor(img)
-    # Resize the image so that the shorter dimension becomes the target dim.
-    shape = tf.cast(tf.shape(img)[1:-1], tf.float32)
-    short_dim = min(shape)
-    scale = target_dim / short_dim
-    new_shape = tf.cast(shape * scale, tf.int32)
-    img = tf.image.resize(img, new_shape)
-    # Central crop the image.
-    img = tf.image.resize_with_crop_or_pad(img, target_dim, target_dim)
-    return img
+    return resize_and_central_crop(img, target_dim=512)
 
 
 def postprocess_image(output_image_data):
