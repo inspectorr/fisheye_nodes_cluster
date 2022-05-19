@@ -23,7 +23,7 @@ def postprocess_image(output_image_data):
 
 
 backend = ImageToImageMLBackend(
-    model_path='models/lite-model_cartoongan_dr_1.tflite',
+    model_path='static/models/lite-model_cartoongan_dr_1.tflite',
     readme_url='https://tfhub.dev/sayakpaul/lite-model/cartoongan/dr/1',
     preprocess_image=preprocess_image,
     postprocess_image=postprocess_image,
@@ -31,7 +31,7 @@ backend = ImageToImageMLBackend(
 
 
 if __name__ == '__main__':
-    test_image_path = 'test_images/roman.jpg'
+    test_image_path = 'static/test_images/roman.jpg'
 
     output_image = backend.predict(test_image_path)
 
