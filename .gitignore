@@ -3,3 +3,4 @@ __pycache__/
 venv/
 fnc.egg-info
 static/*
+!static/.gitkeep
