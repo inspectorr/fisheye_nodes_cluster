@@ -4,11 +4,11 @@ from fnc.common.backend import ImageToImageMLBackend
 from fnc.common.image_utils import resize_and_central_crop
 
 # https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/fp16/prediction/1
-predict_model_path = 'static/models/magenta_arbitrary-image-stylization-v1-256_fp16_prediction_1.tflite'
-transfer_model_path = 'static/models/magenta_arbitrary-image-stylization-v1-256_fp16_transfer_1.tflite'
+predict_model_path = 'models/magenta_arbitrary-image-stylization-v1-256_fp16_prediction_1.tflite'
+transfer_model_path = 'models/magenta_arbitrary-image-stylization-v1-256_fp16_transfer_1.tflite'
 
-content_image_path = 'static/test_images/hermitage.jpg'
-style_image_path = 'static/test_images/drawn_city.jpg'
+content_image_path = 'test_images/hermitage.jpg'
+style_image_path = 'test_images/drawn_city.jpg'
 
 
 # Function to load an image from a file, and add a batch dimension.
