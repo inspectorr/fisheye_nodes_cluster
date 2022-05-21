@@ -3,8 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
-from fnc.common.backend import ImageToImageMLBackend
-from fnc.common.image_utils import resize_and_central_crop
+from fnc.common import NodeRunner, ImageToImageMLBackend, resize_and_central_crop
 
 
 def preprocess_image(source_image_path):
@@ -23,19 +22,26 @@ def postprocess_image(output_image_data):
 
 
 backend = ImageToImageMLBackend(
-    model_path='models/lite-model_cartoongan_dr_1.tflite',
+    model_path='models/lite-model_cartoongan_int8_1.tflite',
     readme_url='https://tfhub.dev/sayakpaul/lite-model/cartoongan/dr/1',
     preprocess_image=preprocess_image,
     postprocess_image=postprocess_image,
 )
 
-__all__ = ['backend']
 
+class Runner(NodeRunner):
+    def run(self, image_path):
+        return backend.predict(image_path)
+
+
+runner = Runner()
+
+__all__ = ['runner']
 
 if __name__ == '__main__':
     test_image_path = 'test_images/roman.jpg'
 
-    output_image = backend.predict(test_image_path)
+    output_image = runner.run(test_image_path)
 
     ImageToImageMLBackend.visualize_for_test((
         ('Source image', plt.imread(test_image_path)),

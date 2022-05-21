@@ -3,12 +3,8 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 
 
-def preprocess_image_default(source_image):
-    ...
-
-
 def postprocess_image_default(output_image_data):
-    ...
+    return output_image_data
 
 
 class ImageToImageMLBackend(ABC):
@@ -17,7 +13,7 @@ class ImageToImageMLBackend(ABC):
             model_path,
             readme_url,
             preprocess_image,
-            postprocess_image,
+            postprocess_image=postprocess_image_default,
     ):
         self.model_path = model_path
         self.readme_url = readme_url
