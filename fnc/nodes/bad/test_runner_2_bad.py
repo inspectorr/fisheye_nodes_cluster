@@ -4,12 +4,10 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 from PIL import Image
 
-from image import load_source_img, preprocess_source_image
-
-image_path = 'test_images/cat.jpeg'
+image_path = '../../../test_images/cat.jpeg'
 
 # https://tfhub.dev/sayakpaul/lite-model/boundless-quarter/dr/1
-model_path = 'models/lite-model_boundless-quarter_dr_1.tflite'
+model_path = '../../../models/lite-model_boundless-quarter_dr_1.tflite'
 
 
 def preprocess_image(image_path):
@@ -24,9 +22,6 @@ def preprocess_image(image_path):
     return image_np
 
 
-# image = load_source_img(image_path)
-#
-# preprocessed_image = preprocess_source_image(image, target_dim=257)
 preprocessed_image = preprocess_image(image_path)
 
 interpreter = tf.lite.Interpreter(model_path=model_path)
