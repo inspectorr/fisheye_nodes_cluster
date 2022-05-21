@@ -1,3 +1,4 @@
+import numpy as np
 import tensorflow as tf
 
 from fnc.common import NodeRunner, ImageToImageMLBackend, resize_and_central_crop
@@ -8,7 +9,9 @@ transfer_model_path = 'models/magenta_arbitrary-image-stylization-v1-256_fp16_tr
 
 def postprocess_image(image):
     if len(image.shape) > 3:
-        return tf.squeeze(image, axis=0)
+        image = tf.squeeze(image, axis=0).numpy()
+    image *= 255
+    return image.astype(np.uint8)
 
 
 backend_prediction = ImageToImageMLBackend(
