@@ -27,10 +27,10 @@ def make_node_endpoint(runner, node_name):
                 return jsonify(error='No selected file'), 400
             if not allowed_file(file.filename):
                 return jsonify(error='Not allowed file extension'), 400
-            filepath = os.path.join(UPLOAD_FOLDER, secure_filename(file.filename))
-            file.save(filepath)
+            orig_image_filepath = os.path.join(UPLOAD_FOLDER, secure_filename(file.filename))
+            file.save(orig_image_filepath)
 
-            output_data = runner.run(filepath)
+            output_data = runner.run(orig_image_filepath)
 
             output_image = Image.fromarray(output_data)
             output_filename = f'{uuid.uuid4()}.png'

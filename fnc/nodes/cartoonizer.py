@@ -1,9 +1,8 @@
 import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
-from fnc.common import NodeRunner, ImageToImageMLBackend, resize_and_central_crop
+from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image
 
 
 def preprocess_image(source_image_path):
@@ -11,7 +10,7 @@ def preprocess_image(source_image_path):
     img = source_image.astype(np.float32) / 127.5 - 1
     img = np.expand_dims(img, 0)
     img = tf.convert_to_tensor(img)
-    return resize_and_central_crop(img, target_dim=512)
+    return squarize_image(img, target_dim=512)
 
 
 def postprocess_image(output_image_data):
@@ -30,7 +29,7 @@ backend = ImageToImageMLBackend(
 
 
 class Runner(NodeRunner):
-    def run(self, image_path):
+    def run_backend(self, image_path):
         return backend.predict(image_path)
 
 
@@ -39,7 +38,9 @@ runner = Runner()
 __all__ = ['runner']
 
 if __name__ == '__main__':
-    test_image_path = 'test_images/roman.jpg'
+    import matplotlib.pyplot as plt
+
+    test_image_path = 'test_images/witch.jpg'
 
     output_image = runner.run(test_image_path)
 
