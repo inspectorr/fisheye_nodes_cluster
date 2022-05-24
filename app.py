@@ -6,6 +6,8 @@ from PIL import Image
 from flask import Flask, request, jsonify, url_for
 from werkzeug.utils import secure_filename
 
+from fnc.common import restore_image
+
 UPLOAD_FOLDER = 'static'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
@@ -27,12 +29,15 @@ def make_node_endpoint(runner, node_name):
                 return jsonify(error='No selected file'), 400
             if not allowed_file(file.filename):
                 return jsonify(error='Not allowed file extension'), 400
-            filepath = os.path.join(UPLOAD_FOLDER, secure_filename(file.filename))
-            file.save(filepath)
+            orig_image_filepath = os.path.join(UPLOAD_FOLDER, secure_filename(file.filename))
+            file.save(orig_image_filepath)
 
-            output_data = runner.run(filepath)
+            output_data = runner.run(orig_image_filepath)
 
-            output_image = Image.fromarray(output_data)
+            source_image = Image.open(orig_image_filepath)
+            orig_width, orig_height = source_image.size
+            r_output_data = restore_image(output_data, orig_width, orig_height)
+            output_image = Image.fromarray(r_output_data)
             output_filename = f'{uuid.uuid4()}.png'
             output_filepath = os.path.join(UPLOAD_FOLDER, output_filename)
             output_image.save(output_filepath)
