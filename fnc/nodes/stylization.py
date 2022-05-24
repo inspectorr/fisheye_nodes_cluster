@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
-from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image, restore_image
+from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image
 
 prediction_model_path = 'models/magenta_arbitrary-image-stylization-v1-256_fp16_prediction_1.tflite'
 transfer_model_path = 'models/magenta_arbitrary-image-stylization-v1-256_fp16_transfer_1.tflite'
