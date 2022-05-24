@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  app:
+    build: .
+    image: fnc
+    container_name: fnc-app
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./static:/app/static
