@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 image_path = '../../../test_images/roman.jpg'
 
 # https://tfhub.dev/sayakpaul/lite-model/mirnet-fixed/dr/1
-model_path = '../../../models/lite-model_mirnet-fixed_dr_1.tflite'
+model_path = '../../../models/tflite/lite-model_mirnet-fixed_dr_1.tflite'
 
 
 def infer_tflite(image):

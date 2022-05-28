@@ -10,12 +10,14 @@ def postprocess_image_default(output_image_data):
 class ImageToImageMLBackend(ABC):
     def __init__(
             self,
-            model_path,
             readme_url,
             preprocess_image,
+            model_path_pb=None,
+            model_path_tflite=None,
             postprocess_image=postprocess_image_default,
     ):
-        self.model_path = model_path
+        self.model_path_pb = model_path_pb
+        self.model_path_tflite = model_path_tflite
         self.readme_url = readme_url
         self.preprocess_image = preprocess_image
         self.postprocess_image = postprocess_image
@@ -33,16 +35,26 @@ class ImageToImageMLBackend(ABC):
 
     def predict(self, image_path, *args):
         preprocessed_image = self.preprocess_image(image_path)
-        output_data = self.invoke_interpreter(preprocessed_image, *args)
+        output_data = None
+        if self.model_path_tflite:
+            output_data = self.invoke_tflite_interpreter(preprocessed_image, *args)
+        if self.model_path_pb:
+            output_data = self.invoke_pb_interpreter(preprocessed_image)
         return self.postprocess_image(output_data)
 
-    def invoke_interpreter(self, *tensors):
+    def invoke_pb_interpreter(self, *args):
+        # import pdb; pdb.set_trace()
+        model = tf.saved_model.load(self.model_path_pb)
+        result = model(args[0])
+        return result
+
+    def invoke_tflite_interpreter(self, *tensors):
         """
         Do the main work with TensorFlow
         :param tensors:
         :return:
         """
-        interpreter = tf.lite.Interpreter(model_path=self.model_path)
+        interpreter = tf.lite.Interpreter(model_path=self.model_path_tflite)
         interpreter.allocate_tensors()
 
         input_details = interpreter.get_input_details()
@@ -51,7 +63,6 @@ class ImageToImageMLBackend(ABC):
         for i, tensor in enumerate(tensors):
             interpreter.set_tensor(input_details[i]['index'], tensor)
 
-        # todo time measurement
         interpreter.invoke()
 
         return interpreter.get_tensor(output_details[0]['index'])

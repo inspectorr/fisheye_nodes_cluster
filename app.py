@@ -87,6 +87,7 @@ def make_node_endpoint(runner, node_name):
 node_module_names = [
     'cartoonizer',
     'stylization',
+    'super_resolution',
 ]
 
 node_modules = map(importlib.import_module, [f'fnc.nodes.{name}' for name in node_module_names])
