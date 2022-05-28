@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
-from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image
+from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image, save_image_locally
 
 prediction_model_path = 'models/magenta_arbitrary-image-stylization-v1-256_fp16_prediction_1.tflite'
 transfer_model_path = 'models/magenta_arbitrary-image-stylization-v1-256_fp16_transfer_1.tflite'
@@ -38,10 +38,15 @@ def load_img(path_to_img):
 
 
 class Runner(NodeRunner):
-    style_image_path = 'test_images/abandoned_city.jpeg'  # todo dynamic
+    def run_backend(self, image_path, params=None):
+        style_image = params.get('style_image') if params else None
+        if not style_image:
+            raise Exception('No style image provided.')
 
-    def run_backend(self, image_path):
-        style_bottleneck = backend_prediction.predict(self.style_image_path)
+        style_image_local = save_image_locally(style_image) if not params.get('PROTECTED_is_local_file') else style_image
+
+        style_bottleneck = backend_prediction.predict(style_image_local)
+
         return backend_transfer.predict(image_path, style_bottleneck)
 
 
@@ -54,7 +59,13 @@ if __name__ == '__main__':
 
     content_image_path = 'test_images/ozerki.jpg'
 
-    stylized_image = runner.run(content_image_path)
+    stylized_image = runner.run(
+        content_image_path,
+        params={
+            'style_image': 'test_images/abandoned_city.jpeg',
+            'PROTECTED_is_local_file': True,
+        }
+    )
 
     ImageToImageMLBackend.visualize_for_test([
         ('Original image', plt.imread(content_image_path)),

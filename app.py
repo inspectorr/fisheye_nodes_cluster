@@ -1,21 +1,14 @@
 import base64
 import importlib
-import os
-import uuid
 
 from PIL import Image
-from flask import Flask, request, jsonify, url_for
-from werkzeug.utils import secure_filename
+from flask import Flask, request, jsonify
 
-UPLOAD_FOLDER = 'static'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+from fnc.common import allowed_image, generate_image_filepath, write_image_file, RemoteImageException
+from settings import UPLOAD_FOLDER
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def make_node_endpoint(runner, node_name):
@@ -43,35 +36,39 @@ def make_node_endpoint(runner, node_name):
             file = request.files['file']
             if file.filename == '':
                 return jsonify(error='No selected file'), 400
-            if not allowed_file(file.filename):
+            if not allowed_image(file.filename):
                 return jsonify(error='Not allowed file extension'), 400
-            source_file_path = os.path.join(UPLOAD_FOLDER, secure_filename(file.filename))
+            source_file_path = generate_image_filepath()
             file.save(source_file_path)
 
         if is_json and 'image_base64' in request.json:
-            source_file_path = os.path.join(UPLOAD_FOLDER, f'input_{uuid.uuid4()}.png')
             try:
                 split = request.json.get('image_base64').split(',')
                 split.reverse()
                 data = split[0]
                 image = base64.b64decode(data)
-            except Exception as e:
+            except:
                 return jsonify(
                     error='Please provide valid "image_base64".'
                 ), 400
-            with open(source_file_path, 'wb') as fh:
-                fh.write(image)
+            source_file_path = write_image_file(image)
+            request.json.pop('image_base64')
 
         if not source_file_path:
             return jsonify(
                 error='You request likely do not neither has "file" in files or "image_base64" in json.'
             ), 400
 
-        output_data = runner.run(source_file_path)
+        try:
+            output_data = runner.run(source_file_path, params=request.json)
+        except RemoteImageException as e:
+            return jsonify(error=str(e)), 400
+        except Exception:
+            # todo logging
+            return jsonify(error='Haha, there is unknown error 😅')
 
         output_image = Image.fromarray(output_data)
-        output_filename = f'output_{uuid.uuid4()}.png'
-        output_filepath = os.path.join(UPLOAD_FOLDER, output_filename)
+        output_filepath = generate_image_filepath()
         output_image.save(output_filepath)
 
         with open(output_filepath, "rb") as image_file:
@@ -80,7 +77,6 @@ def make_node_endpoint(runner, node_name):
 
         return jsonify(
             success=True,
-            image_url=url_for('static', filename=output_filename),
             image_base64=output_image_base64
         )
 

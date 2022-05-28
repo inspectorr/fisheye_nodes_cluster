@@ -29,7 +29,7 @@ backend = ImageToImageMLBackend(
 
 
 class Runner(NodeRunner):
-    def run_backend(self, image_path):
+    def run_backend(self, image_path, params=None):
         return backend.predict(image_path)
 
 

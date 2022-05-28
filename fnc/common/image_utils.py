@@ -1,6 +1,13 @@
+import os
+import uuid
+
 import numpy as np
+import requests
 import tensorflow as tf
 from PIL import Image
+
+from fnc.common.exceptions import RemoteImageException
+from settings import UPLOAD_FOLDER, ALLOWED_EXTENSIONS
 
 
 def squarize_image(img, target_dim):
@@ -35,24 +42,29 @@ def restore_image(np_img, orig_image_path):
     return np.array(img)
 
 
+def get_remote_image_content(image_url):
+    response = requests.get(image_url)
+    if response.status_code > 400:
+        raise RemoteImageException(response.status_code)
+    return response.content
 
 
-#
-# def expand_to_square(pil_img, background_color=(0, 0, 0)):
-#     width, height = pil_img.size
-#     if width == height:
-#         return pil_img, 0, 0
-#     elif width > height:
-#         result = Image.new(pil_img.mode, (width, width), background_color)
-#         diff = (width - height) // 2
-#         result.paste(pil_img, (0, diff))
-#         return result, 0, diff / height
-#     else:
-#         result = Image.new(pil_img.mode, (height, height), background_color)
-#         diff = (height - width) // 2
-#         result.paste(pil_img, (diff, 0))
-#         return result, diff / height, 0
-#
-#
-# def crop_to_original(pil_img, x, y):
-#
+def save_image_locally(image_url):
+    content = get_remote_image_content(image_url)
+    return write_image_file(content)
+
+
+def generate_image_filepath():
+    return os.path.join(UPLOAD_FOLDER,  f'{uuid.uuid4()}.png')
+
+
+def write_image_file(content, image_path=None):
+    image_path = image_path or generate_image_filepath()
+    with open(image_path, 'wb') as f:
+        f.write(content)
+    return image_path
+
+
+def allowed_image(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+

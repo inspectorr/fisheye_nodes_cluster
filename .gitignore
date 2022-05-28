@@ -7,3 +7,5 @@ fnc.egg-info
 
 static/*
 !static/.gitkeep
+
+local_settings.py
