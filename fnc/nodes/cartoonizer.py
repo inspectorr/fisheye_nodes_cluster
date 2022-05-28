@@ -21,7 +21,7 @@ def postprocess_image(output_image_data):
 
 
 backend = ImageToImageMLBackend(
-    model_path='models/lite-model_cartoongan_int8_1.tflite',
+    model_path_tflite='models/tflite/lite-model_cartoongan_int8_1.tflite',
     readme_url='https://tfhub.dev/sayakpaul/lite-model/cartoongan/dr/1',
     preprocess_image=preprocess_image,
     postprocess_image=postprocess_image,

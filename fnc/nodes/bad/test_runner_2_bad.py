@@ -7,7 +7,7 @@ from PIL import Image
 image_path = '../../../test_images/cat.jpeg'
 
 # https://tfhub.dev/sayakpaul/lite-model/boundless-quarter/dr/1
-model_path = '../../../models/lite-model_boundless-quarter_dr_1.tflite'
+model_path = '../../../models/tflite/lite-model_boundless-quarter_dr_1.tflite'
 
 
 def preprocess_image(image_path):
@@ -17,8 +17,7 @@ def preprocess_image(image_path):
     pil_image = pil_image.crop((0, 0, height, height))
     pil_image = pil_image.resize((257, 257), Image.ANTIALIAS)
     image_unscaled = np.array(pil_image)
-    image_np = np.expand_dims(
-        image_unscaled.astype(np.float32) / 255., axis=0)
+    image_np = np.expand_dims(image_unscaled.astype(np.float32) / 255., axis=0)
     return image_np
 
 

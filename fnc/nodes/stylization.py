@@ -3,8 +3,8 @@ import tensorflow as tf
 
 from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image, save_image_locally
 
-prediction_model_path = 'models/magenta_arbitrary-image-stylization-v1-256_fp16_prediction_1.tflite'
-transfer_model_path = 'models/magenta_arbitrary-image-stylization-v1-256_fp16_transfer_1.tflite'
+prediction_model_path = 'models/tflite/magenta_arbitrary-image-stylization-v1-256_fp16_prediction_1.tflite'
+transfer_model_path = 'models/tflite/magenta_arbitrary-image-stylization-v1-256_fp16_transfer_1.tflite'
 
 
 def postprocess_image(image):
@@ -15,13 +15,13 @@ def postprocess_image(image):
 
 
 backend_prediction = ImageToImageMLBackend(
-    model_path=prediction_model_path,
+    model_path_tflite=prediction_model_path,
     readme_url='https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/fp16/prediction/1',
     preprocess_image=lambda img_path: squarize_image(load_img(img_path), target_dim=256)
 )
 
 backend_transfer = ImageToImageMLBackend(
-    model_path=transfer_model_path,
+    model_path_tflite=transfer_model_path,
     readme_url='https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/fp16/prediction/1',
     preprocess_image=lambda img_path: squarize_image(load_img(img_path), target_dim=384),
     postprocess_image=postprocess_image
