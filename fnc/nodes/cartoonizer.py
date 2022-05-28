@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 
-from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image
+from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image, restore_image
 
 
 def preprocess_image(source_image_path):
@@ -30,7 +30,8 @@ backend = ImageToImageMLBackend(
 
 class Runner(NodeRunner):
     def run_backend(self, image_path, params=None):
-        return backend.predict(image_path)
+        output_np_image = backend.predict(image_path)
+        return restore_image(output_np_image, image_path)
 
 
 runner = Runner()

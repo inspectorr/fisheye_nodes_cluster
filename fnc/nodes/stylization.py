@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
-from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image, save_image_locally
+from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image, save_image_locally, restore_image
 
 prediction_model_path = 'models/tflite/magenta_arbitrary-image-stylization-v1-256_fp16_prediction_1.tflite'
 transfer_model_path = 'models/tflite/magenta_arbitrary-image-stylization-v1-256_fp16_transfer_1.tflite'
@@ -47,7 +47,9 @@ class Runner(NodeRunner):
 
         style_bottleneck = backend_prediction.predict(style_image_local)
 
-        return backend_transfer.predict(image_path, style_bottleneck)
+        output_np_image = backend_transfer.predict(image_path, style_bottleneck)
+
+        return restore_image(output_np_image, image_path)
 
 
 runner = Runner()
