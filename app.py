@@ -9,8 +9,6 @@ from settings import UPLOAD_FOLDER
 
 import logging
 
-logging.basicConfig(filename='errors.log', encoding='utf-8')
-
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -66,9 +64,10 @@ def make_node_endpoint(runner, node_name):
         try:
             output_data = runner.run(source_file_path, params=request.json)
         except RemoteImageException as e:
+            logging.exception(e)
             return jsonify(error=str(e)), 400
         except Exception as e:
-            logging.error(str(e))
+            logging.exception(e)
             return jsonify(error='Haha, there is unknown error!')
 
         output_image = Image.fromarray(output_data)

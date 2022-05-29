@@ -9,9 +9,12 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
-COPY . .
+ADD requirements.txt requirements.txt
 
 RUN pip install -r requirements.txt
+
+ADD . .
+
 RUN pip install -e .
 
 EXPOSE 5000

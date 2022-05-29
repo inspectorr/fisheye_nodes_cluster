@@ -1,3 +1,4 @@
+import logging
 import os
 import uuid
 
@@ -43,6 +44,7 @@ def restore_image(np_img, orig_image_path):
 
 
 def get_remote_image_content(image_url):
+    logging.info('reading image url:', image_url)
     response = requests.get(image_url)
     if response.status_code > 400:
         raise RemoteImageException(response.status_code)
