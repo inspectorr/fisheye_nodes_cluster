@@ -3,7 +3,6 @@ version: '3.7'
 services:
   app:
     build: .
-    image: fnc
     container_name: fnc
     restart: unless-stopped
     ports:
