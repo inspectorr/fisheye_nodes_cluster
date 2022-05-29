@@ -1,3 +1,14 @@
+running models in dev
+```shell
+pip install -r requirements.txt
+pip install -e .
+python fnc/nodes/<node name>.py
+```
+running microservice in dev
+```shell
+flask run
+```
+
 deployment
 ```shell
 touch local_settings.py

@@ -9,3 +9,5 @@ static/*
 !static/.gitkeep
 
 local_settings.py
+
+*.log

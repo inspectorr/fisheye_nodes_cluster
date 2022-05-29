@@ -7,6 +7,10 @@ from flask import Flask, request, jsonify
 from fnc.common import allowed_image, generate_image_filepath, write_image_file, RemoteImageException
 from settings import UPLOAD_FOLDER
 
+import logging
+
+logging.basicConfig(filename='errors.log', encoding='utf-8')
+
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -63,9 +67,9 @@ def make_node_endpoint(runner, node_name):
             output_data = runner.run(source_file_path, params=request.json)
         except RemoteImageException as e:
             return jsonify(error=str(e)), 400
-        except Exception:
-            # todo logging
-            return jsonify(error='Haha, there is unknown error 😅')
+        except Exception as e:
+            logging.error(str(e))
+            return jsonify(error='Haha, there is unknown error!')
 
         output_image = Image.fromarray(output_data)
         output_filepath = generate_image_filepath()
