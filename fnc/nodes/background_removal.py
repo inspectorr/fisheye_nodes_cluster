@@ -85,34 +85,16 @@ class Runner(NodeRunner):
     def run_backend(self, image_path, params=None):
         output_np_image = backend.predict(image_path)
 
-        # output_np_image = np.where(output_np_image == 15, output_np_image, 0)  # Person index is 15
-        # cropped_image_np = tf.squeeze(squarize_image(load_img(image_path), target_dim=513), axis=0).numpy()
         cropped_image_np = tf.squeeze(squarize_image(load_img(image_path), target_dim=513), axis=0).numpy()
-        # import pdb; pdb.set_trace()
         new_seg_image_gray = cv2.cvtColor(output_np_image, cv2.COLOR_RGB2GRAY)  # Convert the mask to grayscale
         masked_out = cv2.bitwise_and(cropped_image_np, cropped_image_np, mask=new_seg_image_gray)  # Blend the mask
-        masked_out_new = np.where(masked_out != 0, masked_out, 255)  # Remove the background
-        # return masked_out_new
-        # return cropped_image_np
 
-        if len(masked_out_new.shape) > 3:
-            masked_out_new = tf.squeeze(masked_out_new, axis=0).numpy()
-        masked_out_new *= 255
-        masked_out_new = np.clip(masked_out_new, 0, 255).astype(np.uint8)
+        if len(masked_out.shape) > 3:
+            masked_out = tf.squeeze(masked_out, axis=0).numpy()
+        masked_out *= 255
+        masked_out = np.clip(masked_out, 0, 255).astype(np.uint8)
 
-        return restore_image(masked_out_new, image_path)
-
-        # return restore_image(output_np_image, image_path)
-        # return restore_image(cropped_image_np, image_path)
-
-        # source_image = cv2.imread(image_path)
-        # img = source_image.astype(np.float32) / 127.5 - 1
-        # img = np.expand_dims(source_image.astype(np.float32), 0)
-        # img = tf.convert_to_tensor(img)
-        # img = squarize_image(img, target_dim=513)
-        # img = squarize_image(load_img(image_path), target_dim=513)
-        #
-        # return tf.squeeze(img, axis=0).numpy()
+        return restore_image(masked_out, image_path)
 
 
 runner = Runner()
@@ -123,6 +105,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
     test_image_path = 'test_images/roman.jpg'
+    # test_image_path = 'test_images/cat.jpeg'
 
     output_image = runner.run(test_image_path)
 
