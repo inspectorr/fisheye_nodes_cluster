@@ -43,6 +43,7 @@ def make_node_endpoint(runner, node_name):
             source_file_path = generate_image_filepath()
             file.save(source_file_path)
 
+        json_params = {}
         if is_json and 'image_base64' in request.json:
             try:
                 split = request.json.get('image_base64').split(',')
@@ -55,6 +56,7 @@ def make_node_endpoint(runner, node_name):
                 ), 400
             source_file_path = write_image_file(image)
             request.json.pop('image_base64')
+            json_params = request.json
 
         if not source_file_path:
             return jsonify(
@@ -62,7 +64,7 @@ def make_node_endpoint(runner, node_name):
             ), 400
 
         try:
-            output_data = runner.run(source_file_path, params=request.json)
+            output_data = runner.run(source_file_path, params=json_params)
         except RemoteImageException as e:
             logging.exception(e)
             return jsonify(error=str(e)), 400
