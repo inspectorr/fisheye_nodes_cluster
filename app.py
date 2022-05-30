@@ -93,6 +93,7 @@ node_module_names = [
     'cartoonizer',
     'stylization',
     'super_resolution',
+    'selfie_to_anime',
 ]
 
 node_modules = map(importlib.import_module, [f'fnc.nodes.{name}' for name in node_module_names])
