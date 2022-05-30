@@ -103,4 +103,11 @@ for i, module in enumerate(node_modules):
 
 
 if __name__ == '__main__':
+    applogger = app.logger
+
+    file_handler = logging.FileHandler('errors.log')
+    file_handler.setLevel(logging.ERROR)
+
+    applogger.addHandler(file_handler)
+
     app.run(host='0.0.0.0', port=5000)
