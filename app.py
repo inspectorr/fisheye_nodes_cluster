@@ -94,6 +94,7 @@ node_module_names = [
     'stylization',
     'super_resolution',
     'selfie_to_anime',
+    'background_removal',
 ]
 
 node_modules = map(importlib.import_module, [f'fnc.nodes.{name}' for name in node_module_names])

@@ -104,7 +104,6 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
     test_image_path = 'test_images/roman.jpg'
-    # test_image_path = 'test_images/cat.jpeg'
 
     output_image = runner.run(test_image_path)
 
