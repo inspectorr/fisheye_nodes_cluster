@@ -43,6 +43,21 @@ def restore_image(np_img, orig_image_path):
     return np.array(img)
 
 
+def tf_to_np(image):
+    if len(image.shape) > 3:
+        image = tf.squeeze(image, axis=0).numpy()
+    image *= 255
+    return image.astype(np.uint8)
+
+
+def load_img_to_tf(path_to_img):
+    img = tf.io.read_file(path_to_img)
+    img = tf.io.decode_image(img, channels=3)
+    img = tf.image.convert_image_dtype(img, tf.float32)
+    img = img[tf.newaxis, :]
+    return img
+
+
 def get_remote_image_content(image_url):
     logging.info('reading image url:', image_url)
     response = requests.get(image_url)

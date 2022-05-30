@@ -2,8 +2,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 
-from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image, restore_image
-from fnc.nodes.stylization import load_img
+from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image, restore_image, load_img_to_tf
 
 
 def create_pascal_label_colormap():
@@ -85,7 +84,7 @@ class Runner(NodeRunner):
     def run_backend(self, image_path, params=None):
         output_np_image = backend.predict(image_path)
 
-        cropped_image_np = tf.squeeze(squarize_image(load_img(image_path), target_dim=513), axis=0).numpy()
+        cropped_image_np = tf.squeeze(squarize_image(load_img_to_tf(image_path), target_dim=513), axis=0).numpy()
         new_seg_image_gray = cv2.cvtColor(output_np_image, cv2.COLOR_RGB2GRAY)  # Convert the mask to grayscale
         masked_out = cv2.bitwise_and(cropped_image_np, cropped_image_np, mask=new_seg_image_gray)  # Blend the mask
 

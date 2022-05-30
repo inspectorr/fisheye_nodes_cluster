@@ -1,40 +1,24 @@
-import numpy as np
-import tensorflow as tf
-
-from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image, save_image_locally, restore_image
+from fnc.common import (
+    NodeRunner, ImageToImageMLBackend,
+    squarize_image, save_image_locally, restore_image, tf_to_np, load_img_to_tf
+)
 
 prediction_model_path = 'models/tflite/magenta_arbitrary-image-stylization-v1-256_fp16_prediction_1.tflite'
 transfer_model_path = 'models/tflite/magenta_arbitrary-image-stylization-v1-256_fp16_transfer_1.tflite'
 
 
-def postprocess_image(image):
-    if len(image.shape) > 3:
-        image = tf.squeeze(image, axis=0).numpy()
-    image *= 255
-    return image.astype(np.uint8)
-
-
 backend_prediction = ImageToImageMLBackend(
     model_path_tflite=prediction_model_path,
     readme_url='https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/fp16/prediction/1',
-    preprocess_image=lambda img_path: squarize_image(load_img(img_path), target_dim=256)
+    preprocess_image=lambda img_path: squarize_image(load_img_to_tf(img_path), target_dim=256)
 )
 
 backend_transfer = ImageToImageMLBackend(
     model_path_tflite=transfer_model_path,
     readme_url='https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/fp16/prediction/1',
-    preprocess_image=lambda img_path: squarize_image(load_img(img_path), target_dim=384),
-    postprocess_image=postprocess_image
+    preprocess_image=lambda img_path: squarize_image(load_img_to_tf(img_path), target_dim=384),
+    postprocess_image=lambda image: tf_to_np(image)
 )
-
-
-def load_img(path_to_img):
-    img = tf.io.read_file(path_to_img)
-    img = tf.io.decode_image(img, channels=3)
-    img = tf.image.convert_image_dtype(img, tf.float32)
-    img = img[tf.newaxis, :]
-
-    return img
 
 
 class Runner(NodeRunner):
