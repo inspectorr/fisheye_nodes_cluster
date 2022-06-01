@@ -16,11 +16,15 @@ class ImageToImageMLBackend(ABC):
             model_path_tflite=None,
             postprocess_image=postprocess_image_default,
     ):
-        self.model_path_pb = model_path_pb
-        self.model_path_tflite = model_path_tflite
         self.readme_url = readme_url
         self.preprocess_image = preprocess_image
         self.postprocess_image = postprocess_image
+        if model_path_tflite:
+            self.tflite_interpreter = tf.lite.Interpreter(model_path=model_path_tflite)
+            print(f'TFLite loaded: {model_path_tflite}')
+        if model_path_pb:
+            self.pb_interpreter = tf.saved_model.load(model_path_pb)
+            print(f'TB loaded: {model_path_pb}')
 
     @staticmethod
     def visualize_for_test(images):
@@ -36,25 +40,17 @@ class ImageToImageMLBackend(ABC):
     def predict(self, image_path, *args):
         preprocessed_image = self.preprocess_image(image_path)
         output_data = None
-        if self.model_path_tflite:
+        if self.tflite_interpreter:
             output_data = self.invoke_tflite_interpreter(preprocessed_image, *args)
-        if self.model_path_pb:
+        if self.pb_interpreter:
             output_data = self.invoke_pb_interpreter(preprocessed_image)
         return self.postprocess_image(output_data)
 
     def invoke_pb_interpreter(self, *args):
-        # import pdb; pdb.set_trace()
-        model = tf.saved_model.load(self.model_path_pb)
-        result = model(args[0])
-        return result
+        return self.pb_interpreter(args[0])
 
     def invoke_tflite_interpreter(self, *tensors):
-        """
-        Do the main work with TensorFlow
-        :param tensors:
-        :return:
-        """
-        interpreter = tf.lite.Interpreter(model_path=self.model_path_tflite)
+        interpreter = self.tflite_interpreter
         interpreter.allocate_tensors()
 
         input_details = interpreter.get_input_details()
