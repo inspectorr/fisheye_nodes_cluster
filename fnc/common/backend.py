@@ -19,9 +19,11 @@ class ImageToImageMLBackend(ABC):
         self.readme_url = readme_url
         self.preprocess_image = preprocess_image
         self.postprocess_image = postprocess_image
+        self.tflite_interpreter = None
         if model_path_tflite:
             self.tflite_interpreter = tf.lite.Interpreter(model_path=model_path_tflite)
             print(f'TFLite loaded: {model_path_tflite}')
+        self.pb_interpreter = None
         if model_path_pb:
             self.pb_interpreter = tf.saved_model.load(model_path_pb)
             print(f'TB loaded: {model_path_pb}')
