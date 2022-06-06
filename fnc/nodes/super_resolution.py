@@ -6,6 +6,9 @@ from PIL.Image import Resampling
 from fnc.common import NodeRunner, ImageToImageMLBackend
 
 
+TARGET_HEIGHT = 512
+
+
 def preprocess_image(image_path):
     img = tf.image.decode_image(tf.io.read_file(image_path))
     # If PNG, remove the alpha channel. The model only supports
@@ -37,7 +40,7 @@ def downscale_image(image):
     image = tf.squeeze(tf.cast(tf.clip_by_value(image, 0, 255), tf.uint8))
 
     ratio = image_size[0] / image_size[1]
-    target_height = 50
+    target_height = TARGET_HEIGHT
     target_width = round(target_height * ratio)
 
     lr_image = np.asarray(Image.fromarray(image.numpy()).resize(
