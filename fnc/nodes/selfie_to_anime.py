@@ -1,16 +1,7 @@
-import cv2
 import numpy as np
 import tensorflow as tf
 
-from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image, restore_image
-
-
-def preprocess_image(source_image_path):
-    source_image = cv2.imread(source_image_path)
-    img = source_image.astype(np.uint8)
-    img = np.expand_dims(img, 0)
-    img = tf.convert_to_tensor(img)
-    return squarize_image(img, target_dim=256)
+from fnc.common import NodeRunner, MLBackend, squarize_image, restore_image, load_img_to_tf
 
 
 def postprocess_image(image):
@@ -21,11 +12,11 @@ def postprocess_image(image):
     return image.astype(np.uint8)
 
 
-backend = ImageToImageMLBackend(
+backend = MLBackend(
     model_path_tflite='models/tflite/selfie2anime.tflite',
     readme_url='https://github.com/margaretmz/Selfie2Anime-with-TFLite/',
-    preprocess_image=preprocess_image,
-    postprocess_image=postprocess_image,
+    preprocess=lambda img_path: squarize_image(load_img_to_tf(img_path, tf.uint8), target_dim=256),
+    postprocess=postprocess_image,
 )
 
 
@@ -46,7 +37,7 @@ if __name__ == '__main__':
 
     output_image = runner.run(test_image_path)
 
-    ImageToImageMLBackend.visualize_for_test((
+    MLBackend.visualize_for_test((
         ('Source image', plt.imread(test_image_path)),
         ('Anime image', output_image)
     ))

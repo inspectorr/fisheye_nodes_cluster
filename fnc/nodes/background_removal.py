@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 
-from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image, restore_image, load_img_to_tf
+from fnc.common import NodeRunner, MLBackend, squarize_image, restore_image, load_img_to_tf
 
 
 def create_pascal_label_colormap():
@@ -72,11 +72,11 @@ def postprocess_image(image):
     return new_seg_image
 
 
-backend = ImageToImageMLBackend(
+backend = MLBackend(
     model_path_tflite='models/tflite/mobilenetv2_coco_voctrainval.tflite',
     readme_url='https://colab.research.google.com/github/sayakpaul/Adventures-in-TensorFlow-Lite/blob/master/Semantic_Segmentation_%2B_Background_Removal_%2B_Style_Transfer.ipynb',
-    preprocess_image=preprocess_image,
-    postprocess_image=postprocess_image,
+    preprocess=preprocess_image,
+    postprocess=postprocess_image,
 )
 
 
@@ -96,7 +96,7 @@ class Runner(NodeRunner):
         return restore_image(masked_out, image_path)
 
 
-runner = Runner()
+runner = Runner(MLBackend)
 
 __all__ = ['runner']
 
@@ -107,7 +107,7 @@ if __name__ == '__main__':
 
     output_image = runner.run(test_image_path)
 
-    ImageToImageMLBackend.visualize_for_test((
+    MLBackend.visualize_for_test((
         ('Source image', plt.imread(test_image_path)),
         ('Masked image', output_image)
     ))

@@ -3,22 +3,18 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 
 
-def postprocess_image_default(output_image_data):
-    return output_image_data
-
-
-class ImageToImageMLBackend(ABC):
+class MLBackend(ABC):
     def __init__(
             self,
             readme_url,
-            preprocess_image,
             model_path_pb=None,
             model_path_tflite=None,
-            postprocess_image=postprocess_image_default,
+            preprocess=lambda x: x,
+            postprocess=lambda x: x,
     ):
         self.readme_url = readme_url
-        self.preprocess_image = preprocess_image
-        self.postprocess_image = postprocess_image
+        self.preprocess_func = preprocess
+        self.postprocess_func = postprocess
         self.tflite_interpreter = None
         if model_path_tflite:
             self.tflite_interpreter = tf.lite.Interpreter(model_path=model_path_tflite)
@@ -39,17 +35,17 @@ class ImageToImageMLBackend(ABC):
             plt.title(title)
         plt.show()
 
-    def predict(self, image_path, *args):
-        preprocessed_image = self.preprocess_image(image_path)
+    def predict(self, data, *args):
+        preprocessed_data = self.preprocess_func(data)
         output_data = None
         if self.tflite_interpreter:
-            output_data = self.invoke_tflite_interpreter(preprocessed_image, *args)
+            output_data = self.invoke_tflite_interpreter(preprocessed_data, *args)
         if self.pb_interpreter:
-            output_data = self.invoke_pb_interpreter(preprocessed_image)
-        return self.postprocess_image(output_data)
+            output_data = self.invoke_pb_interpreter(preprocessed_data)
+        return self.postprocess_func(output_data)
 
-    def invoke_pb_interpreter(self, *args):
-        return self.pb_interpreter(args[0])
+    def invoke_pb_interpreter(self, data):
+        return self.pb_interpreter(data)
 
     def invoke_tflite_interpreter(self, *tensors):
         interpreter = self.tflite_interpreter

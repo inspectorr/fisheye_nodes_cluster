@@ -50,10 +50,10 @@ def tf_to_np(image):
     return image.astype(np.uint8)
 
 
-def load_img_to_tf(path_to_img):
+def load_img_to_tf(path_to_img, tf_type=tf.float32):
     img = tf.io.read_file(path_to_img)
     img = tf.io.decode_image(img, channels=3)
-    img = tf.image.convert_image_dtype(img, tf.float32)
+    img = tf.image.convert_image_dtype(img, tf_type)
     img = img[tf.newaxis, :]
     return img
 

@@ -3,7 +3,7 @@ import tensorflow as tf
 from PIL import Image
 from PIL.Image import Resampling
 
-from fnc.common import NodeRunner, ImageToImageMLBackend
+from fnc.common import NodeRunner, MLBackend
 
 
 def preprocess_image(image_path):
@@ -56,12 +56,12 @@ def postprocess_image(image):
     return image.astype(np.uint8)
 
 
-backend = ImageToImageMLBackend(
+backend = MLBackend(
     model_path_pb='models/pb/esrgan-tf2_1',
     # model_path_tflite='models/tflite/lite-model_esrgan-tf2_1.tflite',
     readme_url='https://tfhub.dev/captain-pool/esrgan-tf2/1',
-    preprocess_image=preprocess_image,
-    postprocess_image=postprocess_image,
+    preprocess=preprocess_image,
+    postprocess=postprocess_image,
 )
 
 
@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
     output_image = runner.run(test_image_path)
 
-    ImageToImageMLBackend.visualize_for_test((
+    MLBackend.visualize_for_test((
         ('Source image', plt.imread(test_image_path)),
         ('Super-resolution image', output_image)
     ))

@@ -1,5 +1,5 @@
 from fnc.common import (
-    NodeRunner, ImageToImageMLBackend,
+    NodeRunner, MLBackend,
     squarize_image, save_image_locally, restore_image, tf_to_np, load_img_to_tf
 )
 
@@ -7,17 +7,17 @@ prediction_model_path = 'models/tflite/magenta_arbitrary-image-stylization-v1-25
 transfer_model_path = 'models/tflite/magenta_arbitrary-image-stylization-v1-256_fp16_transfer_1.tflite'
 
 
-backend_prediction = ImageToImageMLBackend(
+backend_prediction = MLBackend(
     model_path_tflite=prediction_model_path,
     readme_url='https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/fp16/prediction/1',
-    preprocess_image=lambda img_path: squarize_image(load_img_to_tf(img_path), target_dim=256)
+    preprocess=lambda img_path: squarize_image(load_img_to_tf(img_path), target_dim=256)
 )
 
-backend_transfer = ImageToImageMLBackend(
+backend_transfer = MLBackend(
     model_path_tflite=transfer_model_path,
     readme_url='https://tfhub.dev/google/lite-model/magenta/arbitrary-image-stylization-v1-256/fp16/prediction/1',
-    preprocess_image=lambda img_path: squarize_image(load_img_to_tf(img_path), target_dim=384),
-    postprocess_image=lambda image: tf_to_np(image)
+    preprocess=lambda img_path: squarize_image(load_img_to_tf(img_path), target_dim=384),
+    postprocess=lambda image: tf_to_np(image)
 )
 
 
@@ -53,7 +53,7 @@ if __name__ == '__main__':
         }
     )
 
-    ImageToImageMLBackend.visualize_for_test([
+    MLBackend.visualize_for_test([
         ('Original image', plt.imread(content_image_path)),
         ('Stylized Image', stylized_image)
     ])

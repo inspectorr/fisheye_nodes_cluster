@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 
-from fnc.common import NodeRunner, ImageToImageMLBackend, squarize_image, restore_image
+from fnc.common import NodeRunner, MLBackend, squarize_image, restore_image
 
 
 def preprocess_image(source_image_path):
@@ -20,11 +20,11 @@ def postprocess_image(output_image_data):
     return np.squeeze(output)
 
 
-backend = ImageToImageMLBackend(
+backend = MLBackend(
     model_path_tflite='models/tflite/lite-model_cartoongan_int8_1.tflite',
     readme_url='https://tfhub.dev/sayakpaul/lite-model/cartoongan/dr/1',
-    preprocess_image=preprocess_image,
-    postprocess_image=postprocess_image,
+    preprocess=preprocess_image,
+    postprocess=postprocess_image,
 )
 
 
@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
     output_image = runner.run(test_image_path)
 
-    ImageToImageMLBackend.visualize_for_test((
+    MLBackend.visualize_for_test((
         ('Source image', plt.imread(test_image_path)),
         ('Cartoonized image', output_image)
     ))
